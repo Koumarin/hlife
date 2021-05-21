@@ -15,7 +15,9 @@ main = do
   setSGR [Reset]
 
 mainloop :: (Int, Int) -> IO ()
-mainloop cursor = do
+mainloop cursor = let (y, x) = cursor
+                  in do
+  setCursorPosition y x
   c <- hGetChar stdin
   case c of
     'h' -> move cursor ( 0, -1)
@@ -27,9 +29,9 @@ mainloop cursor = do
     'b' -> move cursor ( 1, -1)
     'n' -> move cursor ( 1,  1)
     'q' -> return ()
+    _   -> mainloop cursor
 
 move :: (Int, Int) -> (Int, Int) -> IO ()
 move pos delta = let (y, x) = pointAdd pos delta
                  in do
-  setCursorPosition y x
   mainloop (y, x)
