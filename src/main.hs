@@ -1,8 +1,21 @@
 import System.Console.ANSI
 import System.IO
+import Data.Maybe
 
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
+
+screenSize :: IO (Int, Int)
+screenSize = do
+  saveCursor
+  -- XTerm resize does it like this i think.
+  setCursorPosition 999 999
+  size <- getCursorPosition
+  restoreCursor
+  -- TODO: Learn how maybe works lmao
+  if isJust size
+    then return (fromJust size)
+    else return (80, 24)
 
 main :: IO ()
 main = do
@@ -11,7 +24,9 @@ main = do
   hSetBuffering stdin  NoBuffering
   hSetBuffering stdout NoBuffering
   showCursor
-  mainloop (0, 0)
+  (height, width) <- screenSize
+  let middle = (div height 2, div width 2)
+    in mainloop middle
   -- Be friendly and reset the terminal state lol.
   setSGR [Reset]
   -- Put the cursor at the lowest line we can.
