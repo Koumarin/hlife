@@ -32,6 +32,4 @@ mainloop cursor = let (y, x) = cursor
     _   -> mainloop cursor
 
 move :: (Int, Int) -> (Int, Int) -> IO ()
-move pos delta = let (y, x) = pointAdd pos delta
-                 in do
-  mainloop (y, x)
+move pos delta = mainloop (pointAdd pos delta)
