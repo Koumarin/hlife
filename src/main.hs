@@ -12,7 +12,10 @@ main = do
   hSetBuffering stdout NoBuffering
   showCursor
   mainloop (0, 0)
+  -- Be friendly and reset the terminal state lol.
   setSGR [Reset]
+  -- Put the cursor at the lowest line we can.
+  setCursorPosition 999 0
 
 mainloop :: (Int, Int) -> IO ()
 mainloop cursor = let (y, x) = cursor
