@@ -46,6 +46,9 @@ mainloop cursor = let (y, x) = cursor
     'u' -> move cursor (-1,  1)
     'b' -> move cursor ( 1, -1)
     'n' -> move cursor ( 1,  1)
+    -- I'm thinkin space should maybe be a step?
+    ' ' -> do print cursor; mainloop cursor
+    's' -> do putStr "#"; mainloop cursor
     'q' -> return ()
     _   -> mainloop cursor
 
