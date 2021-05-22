@@ -58,6 +58,25 @@ pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
 ------------------------------------------------------------
+-- Example states
+------------------------------------------------------------
+
+-- The state after glider is glider'.
+glider = [
+  [False, False, False, False, False],
+  [False, False, False,  True, False],
+  [False,  True, False,  True, False],
+  [False, False,  True,  True, False],
+  [False, False, False, False, False]]
+
+glider' = [
+  [False, False, False, False, False],
+  [False,  True, False, False, False],
+  [False, False,  True,  True, False],
+  [False,  True,  True, False, False],
+  [False, False, False, False, False]]
+
+------------------------------------------------------------
 -- Rules
 ------------------------------------------------------------
 
