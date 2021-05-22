@@ -58,6 +58,25 @@ pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
 ------------------------------------------------------------
+-- Rules
+------------------------------------------------------------
+
+alive :: Bool -> Int
+alive b
+  | b         = 1
+  | otherwise = 0
+
+-- Count the number of cells in a 3x3 centered in (y, x).
+mooreNeighbors :: (Int, Int) -> [[Bool]] -> Int
+mooreNeighbors (y, x) state = count neighborhood
+  where
+    -- Get only the 3x3 square around (y, x).
+    neighborhood = sliceBox (y - 1, x - 1) (y + 1, x + 1) state
+    -- Count the number of alive cells.
+    count :: [[Bool]] -> Int
+    count blist = foldr (+) 0 (map (\l -> length $ filter (\b -> b) l) state)
+
+------------------------------------------------------------
 -- Functions for utilizing arrays.
 ------------------------------------------------------------
 
