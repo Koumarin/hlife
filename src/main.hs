@@ -80,11 +80,6 @@ glider' = [
 -- Rules
 ------------------------------------------------------------
 
-alive :: Bool -> Int
-alive b
-  | b         = 1
-  | otherwise = 0
-
 -- Count the number of cells in a 3x3 centered in (y, x).
 mooreNeighbors :: (Int, Int) -> [[Bool]] -> Int
 mooreNeighbors (y, x) state = count neighbors
