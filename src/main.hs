@@ -13,15 +13,15 @@ main = do
   showCursor
   (height, width) <- screenSize
   let middle = (div height 2, div width 2)
-    in mainloop middle
+    in mainloop middle (height, width)
   -- Be friendly and reset the terminal state lol.
   setSGR [Reset]
   -- Put the cursor at the lowest line we can.
   setCursorPosition 999 0
 
-mainloop :: (Int, Int) -> IO ()
-mainloop cursor = let (y, x) = cursor
-                  in do
+mainloop :: (Int, Int) -> (Int, Int) -> IO ()
+mainloop cursor size = let (y, x) = cursor
+                       in do
   setCursorPosition y x
   c <- hGetChar stdin
   case c of
@@ -34,13 +34,13 @@ mainloop cursor = let (y, x) = cursor
     'b' -> move cursor ( 1, -1)
     'n' -> move cursor ( 1,  1)
     -- I'm thinkin space should maybe be a step?
-    ' ' -> do print cursor; mainloop cursor
-    's' -> do putStr "#"; mainloop cursor
+    ' ' -> do print cursor; mainloop cursor size
+    's' -> do putStr "#"; mainloop cursor size
     'q' -> return ()
-    _   -> mainloop cursor
-
-move :: (Int, Int) -> (Int, Int) -> IO ()
-move pos delta = mainloop (pointAdd pos delta)
+    _   -> mainloop cursor size
+  where
+    move :: (Int, Int) -> (Int, Int) -> IO ()
+    move pos delta = mainloop (pointAdd pos delta) size
 
 screenSize :: IO (Int, Int)
 screenSize = do
