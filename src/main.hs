@@ -77,6 +77,26 @@ glider' = [
   [False, False, False, False, False]]
 
 ------------------------------------------------------------
+-- Drawing
+------------------------------------------------------------
+
+lifeToString :: (Int, Int) -> [[Bool]] -> String
+lifeToString (height, width) state = draw screen
+  where
+    -- Outer frame isn't printed.
+    screen = sliceBox (1, 1) (height, width) state
+
+    draw :: [[Bool]] -> String
+    draw []     = []
+    draw (x:xs) = (drawl x) ++ draw xs
+
+    drawl :: [Bool] -> String
+    drawl []     = "\n"
+    drawl (x:xs)
+      | x         = '#' : drawl xs
+      | otherwise = ' ' : drawl xs
+
+------------------------------------------------------------
 -- Rules
 ------------------------------------------------------------
 
