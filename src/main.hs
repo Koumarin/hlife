@@ -58,8 +58,14 @@ pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
 ------------------------------------------------------------
--- Functions for accessing arrays.
+-- Functions for utilizing arrays.
 ------------------------------------------------------------
+
+sliceBox :: (Int, Int) -> (Int, Int) -> [[a]] -> [[a]]
+sliceBox (y0, y) (x0, x) matrix = map (slice x0 x) (slice y0 y matrix)
+
+slice :: Int -> Int -> [a] -> [a]
+slice from to list = take (to - from + 1) (drop from list)
 
 at :: Int -> [a] -> a
 at 0 (x:_)  = x
