@@ -61,8 +61,9 @@ pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 -- Functions for utilizing arrays.
 ------------------------------------------------------------
 
+-- Take the matrix from origin to corner.
 sliceBox :: (Int, Int) -> (Int, Int) -> [[a]] -> [[a]]
-sliceBox (y0, y) (x0, x) matrix = map (slice x0 x) (slice y0 y matrix)
+sliceBox (y0, x0) (y, x) matrix = map (slice x0 x) (slice y0 y matrix)
 
 slice :: Int -> Int -> [a] -> [a]
 slice from to list = take (to - from + 1) (drop from list)
