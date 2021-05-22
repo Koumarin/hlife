@@ -93,7 +93,7 @@ mooreNeighbors (y, x) state = count neighborhood
     neighborhood = sliceBox (y - 1, x - 1) (y + 1, x + 1) state
     -- Count the number of alive cells.
     count :: [[Bool]] -> Int
-    count blist = foldr (+) 0 (map (\l -> length $ filter (\b -> b) l) state)
+    count blist = foldr (+) 0 (map (\l -> length $ filter (\b -> b) l) blist)
 
 ------------------------------------------------------------
 -- Functions for utilizing arrays.
