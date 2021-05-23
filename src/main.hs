@@ -69,18 +69,14 @@ pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
 -- The state after glider is glider'.
 glider = [
-  [False, False, False, False, False],
-  [False, False, False,  True, False],
-  [False,  True, False,  True, False],
-  [False, False,  True,  True, False],
-  [False, False, False, False, False]]
+  [False, False,  True],
+  [ True, False,  True],
+  [False,  True,  True]]
 
 glider' = [
-  [False, False, False, False, False],
-  [False,  True, False, False, False],
-  [False, False,  True,  True, False],
-  [False,  True,  True, False, False],
-  [False, False, False, False, False]]
+  [ True, False, False],
+  [False,  True,  True],
+  [ True,  True, False]]
 
 ------------------------------------------------------------
 -- Drawing
@@ -88,11 +84,8 @@ glider' = [
 
 lifeToString :: (Int, Int) -> [[Bool]] -> String
 lifeToString (height, width) state =
-  foldr (\line rest -> (draw line) ++ "\n" ++ rest) "" screen
+  foldr (\line rest -> (draw line) ++ "\n" ++ rest) "" state
   where
-    -- Outer frame isn't printed.
-    screen = sliceBox (1, 1) (height, width) state
-
     draw :: [Bool] -> String
     draw [] = ""
     draw (x:xs)
@@ -123,7 +116,7 @@ sliceBox :: (Int, Int) -> (Int, Int) -> [[a]] -> [[a]]
 sliceBox (y0, x0) (y, x) matrix = map (slice x0 x) (slice y0 y matrix)
 
 slice :: Int -> Int -> [a] -> [a]
-slice from to list = take (to - from + 1) (drop from list)
+slice from to list = take (to + 1 - (max from 0)) (drop from list)
 
 at :: Int -> [a] -> a
 at 0 (x:_)  = x
