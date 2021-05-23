@@ -16,16 +16,20 @@ main = do
     hSetBuffering stdout NoBuffering
     showCursor
     size <- screenSize
-    let middle = (\(h, w) -> (div h 2, div w 2)) size
-      in mainloop middle size
+    let (height, width) = size
+        middle          = (div height 2, div width 2)
+        blank           = replicate height (replicate width False)
+      in do
+      draw size blank
+      mainloop middle size blank
     -- Be friendly and reset the terminal state lol.
     setSGR [Reset]
     -- Put the cursor at the lowest line we can.
     setCursorPosition 999 0
 
-mainloop :: (Int, Int) -> (Int, Int) -> IO ()
-mainloop cursor size = let (y, x) = cursor
-                       in do
+mainloop :: (Int, Int) -> (Int, Int) -> [[Bool]] -> IO ()
+mainloop cursor size state = let (y, x) = cursor
+                             in do
   setCursorPosition y x
   c <- hGetChar stdin
   case c of
@@ -40,16 +44,36 @@ mainloop cursor size = let (y, x) = cursor
     'n' -> move cursor ( 1,  1)
     -- I'm thinkin space should maybe be a step? Or maybe pause/unpause
     -- if i can figure out how to add input timeout.
-    ' ' -> do print cursor; mainloop cursor size
+    ' ' -> step
     -- Add a live cell at cursor position.
-    's' -> do putStr "#"; mainloop cursor size
+    's' -> setCell True
+    -- Make cell at cursor position die.
+    'd' -> setCell False
     -- Quit.
     'q' -> return ()
-    _   -> mainloop cursor size
+    _   -> mainloop cursor size state
   where
     -- Move cursor by an increment.
+    -- TODO: Add bounds checking.
     move :: (Int, Int) -> (Int, Int) -> IO ()
     move pos delta = mainloop (pointAdd pos delta) size
+    -- Set cell under cursor position.
+    setCell :: Bool -> IO ()
+    setCell b = let nextState = atyxPut cursor b state
+                in do
+      draw size nextState
+      mainloop cursor size nextState
+    -- Perform a step (ideally this should have been pause/unpause).
+    step = let nextState = lifeStep state size
+           in do
+      draw size nextState
+      mainloop cursor size nextState
+
+draw :: (Int, Int) -> [[Bool]] -> IO ()
+draw size state = do
+  clearScreen
+  setCursorPosition 0 0
+  putStr $ lifeToString size state
 
 -- Either get terminal size when our terminal understands the keycode
 -- or we default to 80x24.
