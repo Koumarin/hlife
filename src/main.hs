@@ -63,20 +63,42 @@ screenSize = do
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
+within :: (Int, Int) -> Int -> Bool
+within (low, hi) n = n >= low &&
+                     n <= hi
+
 ------------------------------------------------------------
 -- Example states
 ------------------------------------------------------------
 
--- The state after glider is glider'.
+-- Successive applications of lifeStep on each glider state.
 glider = [
-  [False, False,  True],
-  [ True, False,  True],
-  [False,  True,  True]]
+  [False, False, False, False, False],
+  [False, False,  True, False, False],
+  [ True, False,  True, False, False],
+  [False,  True,  True, False, False],
+  [False, False, False, False, False]]
 
 glider' = [
-  [ True, False, False],
-  [False,  True,  True],
-  [ True,  True, False]]
+  [False, False, False, False, False],
+  [False,  True, False, False, False],
+  [False, False,  True,  True, False],
+  [False,  True,  True, False, False],
+  [False, False, False, False, False]]
+
+glider'' = [
+  [False, False, False, False, False],
+  [False, False,  True, False, False],
+  [False, False, False,  True, False],
+  [False,  True,  True,  True, False],
+  [False, False, False, False, False]]
+
+glider''' = [
+  [False, False, False, False, False],
+  [False, False, False, False, False],
+  [False,  True, False,  True, False],
+  [False, False,  True,  True, False],
+  [False, False,  True, False, False]]
 
 ------------------------------------------------------------
 -- Drawing
@@ -95,6 +117,24 @@ lifeToString (height, width) state =
 ------------------------------------------------------------
 -- Rules
 ------------------------------------------------------------
+
+lifeStep :: [[Bool]] -> (Int, Int) -> [[Bool]]
+lifeStep state (height, width) =
+  map (\i -> map (\j -> lives (i, j))
+                 [0 .. width - 1])
+      [0 .. height - 1]
+  where
+    lives :: (Int, Int) -> Bool
+    lives cell
+      | (&&) (dead cell)
+             (neighbors == 3)          = True
+      | (&&) (live cell)
+             (within (3, 4) neighbors) = True
+      | otherwise                      = False
+      where
+        neighbors = mooreNeighbors cell state
+    live = (\c -> atyx c state)
+    dead = (\c -> not $ live c)
 
 -- Count the number of cells in a 3x3 centered in (y, x).
 mooreNeighbors :: (Int, Int) -> [[Bool]] -> Int
