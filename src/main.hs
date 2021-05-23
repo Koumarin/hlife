@@ -11,9 +11,9 @@ main = do
   hSetBuffering stdin  NoBuffering
   hSetBuffering stdout NoBuffering
   showCursor
-  (height, width) <- screenSize
-  let middle = (div height 2, div width 2)
-    in mainloop middle (height, width)
+  size <- screenSize
+  let middle = (\(h, w) -> (div h 2, div w 2)) size
+    in mainloop middle size
   -- Be friendly and reset the terminal state lol.
   setSGR [Reset]
   -- Put the cursor at the lowest line we can.
