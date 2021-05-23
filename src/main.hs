@@ -66,10 +66,7 @@ mainloop cursor size state = let (y, x) = cursor
     setCell b = let nextState = atyxPut cursor b state
                 in do
       -- Only redraw the character we're setting.
-      putStr ((\b -> if b
-                     then return '#'
-                     else return ' ')
-              b)
+      putStr (if b then "#" else " ")
       mainloop cursor size nextState
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
