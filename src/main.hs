@@ -74,7 +74,9 @@ mainloop cursor size state = let (y, x) = cursor
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
            in do
+      hideCursor
       draw size nextState
+      showCursor
       mainloop cursor size nextState
 
 draw :: (Int, Int) -> [[Bool]] -> IO ()
