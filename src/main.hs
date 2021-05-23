@@ -130,7 +130,7 @@ glider''' = [
 
 lifeToString :: (Int, Int) -> [[Bool]] -> String
 lifeToString (height, width) state =
-  foldr (\line rest -> (draw line) ++ "\n" ++ rest) "" state
+  foldr (\line rest -> (draw line) ++ rest) "" state
   where
     draw :: [Bool] -> String
     draw [] = ""
