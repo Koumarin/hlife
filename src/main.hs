@@ -49,6 +49,10 @@ mainloop cursor size state = let (y, x) = cursor
     's' -> setCell True
     -- Make cell at cursor position die.
     'd' -> setCell False
+    -- Generate a random state.
+    'r' -> do setCursorPosition 999 0
+              putStr "Sorry I didn't write the random state generator yet :(\n";
+              mainloop cursor size state
     -- Quit.
     'q' -> return ()
     _   -> mainloop cursor size state
