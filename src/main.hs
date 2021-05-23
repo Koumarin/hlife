@@ -6,18 +6,22 @@ import Data.Maybe
 
 main :: IO ()
 main = do
-  setTitle "Conway's Game of Life"
-  hSetEcho stdin False
-  hSetBuffering stdin  NoBuffering
-  hSetBuffering stdout NoBuffering
-  showCursor
-  size <- screenSize
-  let middle = (\(h, w) -> (div h 2, div w 2)) size
-    in mainloop middle size
-  -- Be friendly and reset the terminal state lol.
-  setSGR [Reset]
-  -- Put the cursor at the lowest line we can.
-  setCursorPosition 999 0
+  ansi <- hSupportsANSI stdout
+  if (not ansi)
+    then putStr "I'm sorry, this game only runs on ANSI terminals.\n"
+    else do
+    setTitle "Conway's Game of Life"
+    hSetEcho      stdin  False
+    hSetBuffering stdin  NoBuffering
+    hSetBuffering stdout NoBuffering
+    showCursor
+    size <- screenSize
+    let middle = (\(h, w) -> (div h 2, div w 2)) size
+      in mainloop middle size
+    -- Be friendly and reset the terminal state lol.
+    setSGR [Reset]
+    -- Put the cursor at the lowest line we can.
+    setCursorPosition 999 0
 
 mainloop :: (Int, Int) -> (Int, Int) -> IO ()
 mainloop cursor size = let (y, x) = cursor
