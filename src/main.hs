@@ -25,6 +25,7 @@ mainloop cursor size = let (y, x) = cursor
   setCursorPosition y x
   c <- hGetChar stdin
   case c of
+    -- Movement keys     Y,  X
     'h' -> move cursor ( 0, -1)
     'l' -> move cursor ( 0,  1)
     'j' -> move cursor ( 1,  0)
@@ -33,12 +34,16 @@ mainloop cursor size = let (y, x) = cursor
     'u' -> move cursor (-1,  1)
     'b' -> move cursor ( 1, -1)
     'n' -> move cursor ( 1,  1)
-    -- I'm thinkin space should maybe be a step?
+    -- I'm thinkin space should maybe be a step? Or maybe pause/unpause
+    -- if i can figure out how to add input timeout.
     ' ' -> do print cursor; mainloop cursor size
+    -- Add a live cell at cursor position.
     's' -> do putStr "#"; mainloop cursor size
+    -- Quit.
     'q' -> return ()
     _   -> mainloop cursor size
   where
+    -- Move cursor by an increment.
     move :: (Int, Int) -> (Int, Int) -> IO ()
     move pos delta = mainloop (pointAdd pos delta) size
 
