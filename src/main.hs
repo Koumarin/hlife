@@ -88,7 +88,7 @@ lifeToString (height, width) state =
     screen = sliceBox (1, 1) (height, width) state
 
     draw :: [Bool] -> String
-    draw []     = ""
+    draw [] = ""
     draw (x:xs)
       | x         = '#' : draw xs
       | otherwise = ' ' : draw xs
