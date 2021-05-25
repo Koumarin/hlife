@@ -77,16 +77,18 @@ mainloop cursor size state = let (y, x) = cursor
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
            in do
-      hideCursor
       draw size nextState
-      showCursor
       mainloop cursor size nextState
 
 draw :: (Int, Int) -> [[Bool]] -> IO ()
 draw size state = do
+  hideCursor
+  saveCursor
   clearScreen
   setCursorPosition 0 0
   putStr $ lifeToString size state
+  restoreCursor
+  showCursor
 
 -- Either get terminal size when our terminal understands the keycode
 -- or we default to 80x24.
