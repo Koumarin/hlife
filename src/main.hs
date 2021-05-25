@@ -10,6 +10,7 @@ main = do
   if (not ansi)
     then putStr "I'm sorry, this game only runs on ANSI terminals.\n"
     else do
+    saveTitle
     setTitle "Conway's Game of Life"
     hSetEcho      stdin  False
     hSetBuffering stdin  NoBuffering
@@ -24,6 +25,7 @@ main = do
       mainloop middle size blank
     -- Be friendly and reset the terminal state lol.
     setSGR [Reset]
+    restoreTitle
     -- Put the cursor at the lowest line we can.
     setCursorPosition 999 0
     putStr "\n"
@@ -98,6 +100,10 @@ screenSize = do
   if isJust size
     then return (fromJust size)
     else return (24, 80)
+
+-- ANSI sequences I didn't find on the library.
+saveTitle =    do hPutStr stdout "\ESC[22;0t"; hFlush stdout
+restoreTitle = do hPutStr stdout "\ESC[23;0t"; hFlush stdout
 
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
