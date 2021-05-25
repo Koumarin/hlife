@@ -2,6 +2,7 @@ module Main where
 
 import System.Console.ANSI
 import System.IO
+import Control.Exception (catch, throwIO, AsyncException(UserInterrupt))
 import Data.Maybe
 
 main :: IO ()
@@ -9,21 +10,26 @@ main = do
   ansi <- hSupportsANSI stdout
   if (not ansi)
     then putStr "I'm sorry, this game only runs on ANSI terminals.\n"
-    else do
-    saveTitle
-    setTitle "Conway's Game of Life"
-    hSetEcho      stdin  False
-    hSetBuffering stdin  NoBuffering
-    hSetBuffering stdout NoBuffering
-    showCursor
-    size <- screenSize
-    let (height, width) = size
-        middle          = (div height 2, div width 2)
-        blank           = replicate height (replicate width False)
-      in do
-      draw size blank
-      mainloop middle size blank
-    -- Be friendly and reset the terminal state lol.
+    else catch (do saveTitle
+                   setTitle "Conway's Game of Life"
+                   hSetEcho      stdin  False
+                   hSetBuffering stdin  NoBuffering
+                   hSetBuffering stdout NoBuffering
+                   showCursor
+                   size <- screenSize
+                   let (height, width) = size
+                       middle          = (div height 2, div width 2)
+                       blank           = replicate height (replicate width False)
+                     in do
+                     draw size blank
+                     mainloop middle size blank
+                     resetTerminal)
+         (\e -> if e == UserInterrupt
+                then resetTerminal
+                else throwIO e)
+
+-- Be friendly and reset the terminal state.
+resetTerminal = do
     setSGR [Reset]
     restoreTitle
     -- Put the cursor at the lowest line we can.
