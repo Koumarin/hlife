@@ -26,6 +26,7 @@ main = do
     setSGR [Reset]
     -- Put the cursor at the lowest line we can.
     setCursorPosition 999 0
+    putStr "\n"
 
 mainloop :: (Int, Int) -> (Int, Int) -> [[Bool]] -> IO ()
 mainloop cursor size state = let (y, x) = cursor
