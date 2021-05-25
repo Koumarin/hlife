@@ -131,6 +131,38 @@ glider''' = [
   [False, False,  True,  True, False],
   [False, False,  True, False, False]]
 
+-- Some cool patterns (maybe add support to load them?)
+patternHeart = [
+  [ True, False, False,  True],
+  [ True,  True,  True, False]]
+
+patternGlider = [
+  [False, False,  True],
+  [ True, False,  True],
+  [False,  True,  True]]
+
+patternC2Ortho = [
+  [False,  True, False, False,  True],
+  [ True, False, False, False, False],
+  [ True, False, False, False,  True],
+  [ True,  True,  True,  True, False]]
+
+patternPrePulsar = [
+  [ True,  True,  True, False, False, False,  True,  True,  True],
+  [ True, False,  True, False, False, False,  True, False,  True],
+  [ True,  True,  True, False, False, False,  True,  True,  True]]
+
+patternQueenBeeShuttle = [
+  [False, False, False, False, False, False, False, False, False,  True],
+  [False, False, False, False, False, False, False,  True, False,  True],
+  [False, False, False, False, False, False,  True, False,  True, False],
+  [ True,  True, False, False, False,  True, False, False,  True, False, False, False, False, False, False,
+   False, False, False, False, False,  True,  True],
+  [ True,  True, False, False, False, False,  True, False,  True, False, False, False, False, False, False,
+   False, False, False, False, False,  True,  True],
+  [False, False, False, False, False, False, False,  True, False,  True],
+  [False, False, False, False, False, False, False, False, False,  True]]
+
 ------------------------------------------------------------
 -- Drawing
 ------------------------------------------------------------
