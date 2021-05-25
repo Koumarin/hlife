@@ -84,7 +84,6 @@ draw :: (Int, Int) -> [[Bool]] -> IO ()
 draw size state = do
   hideCursor
   saveCursor
-  clearScreen
   setCursorPosition 0 0
   putStr $ lifeToString size state
   restoreCursor
