@@ -51,11 +51,13 @@ mainloop cursor size state = let (y, x) = cursor
     'd' -> setCell False
     -- Generate a random state.
     'r' -> do setCursorPosition 999 0
+              clearLine
               putStr "Sorry I didn't write the random state generator yet :("
               mainloop cursor size state
     -- Load a pattern (displays it under the cursor and lets you place it with 's').
     'e' -> do setCursorPosition 999 0
-              putStr "Sorry I didn't write the pattern loader yet :(        "
+              clearLine
+              putStr "Sorry I didn't write the pattern loader yet :("
               mainloop cursor size state
     -- Quit.
     'q' -> return ()
