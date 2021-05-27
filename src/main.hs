@@ -27,7 +27,7 @@ main = do
                    size <- screenSize
                    let (height, width) = size
                        middle          = (div height 2, div width 2)
-                       blank           = replicate height (replicate width Dead)
+                       blank           = replicate height $replicate width Dead
                      in do
                      drawScreen blank
                      mainloop middle size blank
@@ -194,15 +194,15 @@ patternPrePulsar = [
   [Alive, Alive, Alive,  Dead,  Dead,  Dead, Alive, Alive, Alive]]
 
 patternQueenBeeShuttle = [
-  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive],
-  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive],
-  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive,  Dead],
-  [Alive, Alive,  Dead,  Dead,  Dead, Alive,  Dead,  Dead, Alive,  Dead,  Dead,
-    Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
-  [Alive, Alive,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive,  Dead,  Dead,
-    Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
-  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive],
-  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive]]
+  [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive],
+  [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead, Alive,  Dead, Alive],
+  [ Dead,  Dead, Dead, Dead, Dead,  Dead, Alive,  Dead, Alive,  Dead],
+  [Alive, Alive, Dead, Dead, Dead, Alive,  Dead,  Dead, Alive,  Dead,  Dead,
+    Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
+  [Alive, Alive, Dead, Dead, Dead,  Dead, Alive,  Dead, Alive,  Dead,  Dead,
+    Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
+  [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead, Alive,  Dead, Alive],
+  [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive]]
 
 ------------------------------------------------------------
 -- Drawing
