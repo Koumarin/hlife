@@ -83,7 +83,14 @@ mainloop cursor size state = let (y, x) = cursor
     -- Move cursor by an increment.
     -- TODO: Add bounds checking.
     move :: (Int, Int) -> IO ()
-    move delta = mainloop (pointAdd cursor delta) size state
+    move delta = mainloop newCursor size state
+      where
+        maybeCursor = pointAdd cursor delta
+        newCursor   = if (withinSquare (0, 0)
+                                       (pointAdd size (-1, -1))
+                                       maybeCursor)
+                      then maybeCursor
+                      else cursor
     -- Set cell under cursor position.
     setCell :: Cell -> IO ()
     setCell cell = let nextState = atyxPut cursor cell state
@@ -128,6 +135,10 @@ pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 within :: (Int, Int) -> Int -> Bool
 within (low, hi) n = n >= low &&
                      n <= hi
+
+withinSquare :: (Int, Int) -> (Int, Int) -> (Int, Int) -> Bool
+withinSquare (lowy, lowx) (hiy, hix) (y, x) = within (lowy, hiy) y &&
+                                              within (lowx, hix) x
 
 ------------------------------------------------------------
 -- Example states
