@@ -34,15 +34,17 @@ main = do
                      resetTerminal)
                -- Make sure to reset terminal state no matter what happens.
                (\e -> do resetTerminal; throw (e :: SomeException))
-
-resetTerminal :: IO ()
-resetTerminal = do
-    setSGR [Reset]
-    restoreTitle
-    -- Put the cursor at the lowest line we can.
-    setCursorPosition 999 0
-    showCursor
-    putStr "\n"
+  where
+    resetTerminal = do
+      setSGR [Reset]
+      restoreTitle
+      -- Put the cursor at the lowest line we can.
+      setCursorPosition 999 0
+      showCursor
+      putStr "\n"
+    -- ANSI sequences I didn't find on the library.
+    saveTitle    = hPutStr stdout "\ESC[22;0t"
+    restoreTitle = hPutStr stdout "\ESC[23;0t"
 
 mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
 mainloop cursor size state = let (y, x) = cursor
@@ -118,13 +120,6 @@ screenSize = do
   if isJust size
     then return (fromJust size)
     else return (24, 80)
-
--- ANSI sequences I didn't find on the library.
-saveTitle :: IO ()
-saveTitle = do hPutStr stdout "\ESC[22;0t"; hFlush stdout
-
-restoreTitle :: IO ()
-restoreTitle = do hPutStr stdout "\ESC[23;0t"; hFlush stdout
 
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
