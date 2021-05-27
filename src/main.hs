@@ -100,7 +100,7 @@ mainloop cursor size state = let (y, x) = cursor
     setCell = \cell -> let nextState = atyxPut cursor cell state
                        in do
       -- Only redraw the character we're setting.
-      putStr (show cell)
+      putStr (drawCell cell)
       mainloop cursor size nextState
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
@@ -217,7 +217,11 @@ lifeToString state =
   where
     draw :: [Cell] -> String
     draw []     = ""
-    draw (x:xs) = show x ++ draw xs
+    draw (x:xs) = drawCell x ++ draw xs
+
+drawCell :: Cell -> String
+drawCell Alive = setSGRCode [SetColor Background Vivid Blue]  ++ " "
+drawCell Dead  = setSGRCode [SetColor Background Dull  Black] ++ " "
 
 ------------------------------------------------------------
 -- Rules
