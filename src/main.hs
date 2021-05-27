@@ -106,10 +106,8 @@ mainloop cursor size state = let (y, x) = cursor
 drawScreen :: [[Cell]] -> IO ()
 drawScreen state = do
   hideCursor -- Prevent visible cursor travelling on screen.
-  saveCursor
   setCursorPosition 0 0
   putStr $ lifeToString state
-  restoreCursor
   showCursor
 
 -- Either get terminal size when our terminal understands the keycode
