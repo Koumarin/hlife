@@ -36,6 +36,7 @@ main = do
                 else throwIO e)
 
 -- Be friendly and reset the terminal state.
+resetTerminal :: IO ()
 resetTerminal = do
     setSGR [Reset]
     restoreTitle
@@ -115,7 +116,10 @@ screenSize = do
     else return (24, 80)
 
 -- ANSI sequences I didn't find on the library.
+saveTitle :: IO ()
 saveTitle =    do hPutStr stdout "\ESC[22;0t"; hFlush stdout
+
+restoreTitle :: IO ()
 restoreTitle = do hPutStr stdout "\ESC[23;0t"; hFlush stdout
 
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
