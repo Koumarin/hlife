@@ -10,8 +10,8 @@ data Cell = Alive | Dead
 
 -- TODO: add a way to read these back.
 instance Show Cell where
-  show Alive = "#"
-  show Dead  = " "
+  show Alive = "O"
+  show Dead  = "."
 
 main :: IO ()
 main = do
