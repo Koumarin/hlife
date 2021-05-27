@@ -26,8 +26,7 @@ main = do
                    size <- screenSize
                    let (height, width) = size
                        middle          = (div height 2, div width 2)
-                       blank           = replicate height
-                                                   (replicate width Dead)
+                       blank           = blankLife size
                      in do
                      scrollPageUp (height - 1)
                      drawScreen blank
@@ -81,6 +80,8 @@ mainloop cursor size state = let (y, x) = cursor
               clearLine
               putStr "Sorry I didn't write the pattern loader yet :("
               mainloop cursor size state
+    -- Clear the whole canvas.
+    'c' -> clean
     -- Quit.
     'q' -> return ()
     _   -> mainloop cursor size state
@@ -106,6 +107,10 @@ mainloop cursor size state = let (y, x) = cursor
            in do
       drawScreen nextState
       mainloop cursor size nextState
+    clean = let blank = blankLife size
+            in do
+      drawScreen blank
+      mainloop cursor size blank
 
 drawScreen :: [[Cell]] -> IO ()
 drawScreen state = do
@@ -137,6 +142,9 @@ withinSquare (lowy, lowx) (hiy, hix) (y, x) = within (lowy, hiy) y &&
 ------------------------------------------------------------
 -- Example states
 ------------------------------------------------------------
+
+blankLife :: (Int, Int) -> [[Cell]]
+blankLife (height, width) = replicate height $ replicate width Dead
 
 -- Successive applications of lifeStep on each glider state.
 glider = [
