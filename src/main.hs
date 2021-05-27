@@ -37,10 +37,10 @@ main = do
     resetTerminal = do
       setSGR [Reset]
       restoreTitle
-      -- Put the cursor at the lowest line we can.
+      -- Put the cursor at lowest line we can, so screen isn't cut.
       setCursorPosition 999 0
-      showCursor
       putStr "\n"
+      showCursor
     -- ANSI sequences I didn't find on the library.
     saveTitle    = hPutStr stdout "\ESC[22;0t"
     restoreTitle = hPutStr stdout "\ESC[23;0t"
