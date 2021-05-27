@@ -29,7 +29,7 @@ main = do
                        middle          = (div height 2, div width 2)
                        blank           = replicate height (replicate width Dead)
                      in do
-                     draw blank
+                     drawScreen blank
                      mainloop middle size blank
                      resetTerminal)
                -- Make sure to reset terminal state no matter what happens.
@@ -101,11 +101,11 @@ mainloop cursor size state = let (y, x) = cursor
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
            in do
-      draw nextState
+      drawScreen nextState
       mainloop cursor size nextState
 
-draw :: [[Cell]] -> IO ()
-draw state = do
+drawScreen :: [[Cell]] -> IO ()
+drawScreen state = do
   hideCursor -- Prevent visible cursor travelling on screen.
   saveCursor
   setCursorPosition 0 0
