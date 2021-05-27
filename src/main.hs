@@ -135,64 +135,64 @@ within (low, hi) n = n >= low &&
 
 -- Successive applications of lifeStep on each glider state.
 glider = [
-  [False, False, False, False, False],
-  [False, False,  True, False, False],
-  [ True, False,  True, False, False],
-  [False,  True,  True, False, False],
-  [False, False, False, False, False]]
+  [ Dead,  Dead,  Dead,  Dead,  Dead],
+  [ Dead,  Dead, Alive,  Dead,  Dead],
+  [Alive,  Dead, Alive,  Dead,  Dead],
+  [ Dead, Alive, Alive,  Dead,  Dead],
+  [ Dead,  Dead,  Dead,  Dead,  Dead]]
 
 glider' = [
-  [False, False, False, False, False],
-  [False,  True, False, False, False],
-  [False, False,  True,  True, False],
-  [False,  True,  True, False, False],
-  [False, False, False, False, False]]
+  [ Dead,  Dead,  Dead,  Dead,  Dead],
+  [ Dead, Alive,  Dead,  Dead,  Dead],
+  [ Dead,  Dead, Alive, Alive,  Dead],
+  [ Dead, Alive, Alive,  Dead,  Dead],
+  [ Dead,  Dead,  Dead,  Dead,  Dead]]
 
 glider'' = [
-  [False, False, False, False, False],
-  [False, False,  True, False, False],
-  [False, False, False,  True, False],
-  [False,  True,  True,  True, False],
-  [False, False, False, False, False]]
+  [ Dead,  Dead,  Dead,  Dead,  Dead],
+  [ Dead,  Dead, Alive,  Dead,  Dead],
+  [ Dead,  Dead,  Dead, Alive,  Dead],
+  [ Dead, Alive, Alive, Alive,  Dead],
+  [ Dead,  Dead,  Dead,  Dead,  Dead]]
 
 glider''' = [
-  [False, False, False, False, False],
-  [False, False, False, False, False],
-  [False,  True, False,  True, False],
-  [False, False,  True,  True, False],
-  [False, False,  True, False, False]]
+  [ Dead,  Dead,  Dead,  Dead,  Dead],
+  [ Dead,  Dead,  Dead,  Dead,  Dead],
+  [ Dead, Alive,  Dead, Alive,  Dead],
+  [ Dead,  Dead, Alive, Alive,  Dead],
+  [ Dead,  Dead, Alive,  Dead,  Dead]]
 
 -- Some cool patterns (maybe add support to load them?)
 patternHeart = [
-  [ True, False, False,  True],
-  [ True,  True,  True, False]]
+  [Alive,  Dead,  Dead, Alive],
+  [Alive, Alive, Alive,  Dead]]
 
 patternGlider = [
-  [False, False,  True],
-  [ True, False,  True],
-  [False,  True,  True]]
+  [ Dead,  Dead, Alive],
+  [Alive,  Dead, Alive],
+  [ Dead, Alive, Alive]]
 
 patternC2Ortho = [
-  [False,  True, False, False,  True],
-  [ True, False, False, False, False],
-  [ True, False, False, False,  True],
-  [ True,  True,  True,  True, False]]
+  [ Dead, Alive,  Dead,  Dead, Alive],
+  [Alive,  Dead,  Dead,  Dead,  Dead],
+  [Alive,  Dead,  Dead,  Dead, Alive],
+  [Alive, Alive, Alive, Alive,  Dead]]
 
 patternPrePulsar = [
-  [ True,  True,  True, False, False, False,  True,  True,  True],
-  [ True, False,  True, False, False, False,  True, False,  True],
-  [ True,  True,  True, False, False, False,  True,  True,  True]]
+  [Alive, Alive, Alive,  Dead,  Dead,  Dead, Alive, Alive, Alive],
+  [Alive,  Dead, Alive,  Dead,  Dead,  Dead, Alive,  Dead, Alive],
+  [Alive, Alive, Alive,  Dead,  Dead,  Dead, Alive, Alive, Alive]]
 
 patternQueenBeeShuttle = [
-  [False, False, False, False, False, False, False, False, False,  True],
-  [False, False, False, False, False, False, False,  True, False,  True],
-  [False, False, False, False, False, False,  True, False,  True, False],
-  [ True,  True, False, False, False,  True, False, False,  True, False, False, False, False, False, False,
-   False, False, False, False, False,  True,  True],
-  [ True,  True, False, False, False, False,  True, False,  True, False, False, False, False, False, False,
-   False, False, False, False, False,  True,  True],
-  [False, False, False, False, False, False, False,  True, False,  True],
-  [False, False, False, False, False, False, False, False, False,  True]]
+  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive],
+  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive],
+  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive,  Dead],
+  [Alive, Alive,  Dead,  Dead,  Dead, Alive,  Dead,  Dead, Alive,  Dead,  Dead,
+    Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
+  [Alive, Alive,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive,  Dead,  Dead,
+    Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
+  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive,  Dead, Alive],
+  [ Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead,  Dead, Alive]]
 
 ------------------------------------------------------------
 -- Drawing
