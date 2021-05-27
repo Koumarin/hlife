@@ -22,7 +22,6 @@ main = do
                    setTitle "Conway's Game of Life"
                    hSetEcho      stdin  False
                    hSetBuffering stdin  NoBuffering
-                   hSetBuffering stdout NoBuffering
                    showCursor
                    size <- screenSize
                    let (height, width) = size
@@ -50,6 +49,7 @@ mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
 mainloop cursor size state = let (y, x) = cursor
                              in do
   setCursorPosition y x
+  hFlush stdout
   c <- hGetChar stdin
   case c of
     -- Movement   Y,  X
