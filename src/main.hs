@@ -2,7 +2,7 @@ module Main where
 
 import System.Console.ANSI
 import System.IO
-import Control.Exception (catch, throwIO, AsyncException(UserInterrupt))
+import Control.Exception (catch, throw, SomeException)
 import Data.Maybe
 
 data Cell = Alive | Dead
@@ -31,9 +31,7 @@ main = do
                      draw blank
                      mainloop middle size blank
                      resetTerminal)
-         (\e -> if e == UserInterrupt
-                then resetTerminal
-                else throwIO e)
+               (\e -> do resetTerminal; throw (e :: SomeException))
 
 -- Be friendly and reset the terminal state.
 resetTerminal :: IO ()
@@ -42,6 +40,7 @@ resetTerminal = do
     restoreTitle
     -- Put the cursor at the lowest line we can.
     setCursorPosition 999 0
+    showCursor
     putStr "\n"
 
 mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
