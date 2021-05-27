@@ -28,7 +28,7 @@ main = do
                        middle          = (div height 2, div width 2)
                        blank           = replicate height (replicate width Dead)
                      in do
-                     draw size blank
+                     draw blank
                      mainloop middle size blank
                      resetTerminal)
          (\e -> if e == UserInterrupt
@@ -94,15 +94,15 @@ mainloop cursor size state = let (y, x) = cursor
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
            in do
-      draw size nextState
+      draw nextState
       mainloop cursor size nextState
 
-draw :: (Int, Int) -> [[Cell]] -> IO ()
-draw size state = do
+draw :: [[Cell]] -> IO ()
+draw state = do
   hideCursor
   saveCursor
   setCursorPosition 0 0
-  putStr $ lifeToString size state
+  putStr $ lifeToString state
   restoreCursor
   showCursor
 
@@ -198,8 +198,8 @@ patternQueenBeeShuttle = [
 -- Drawing
 ------------------------------------------------------------
 
-lifeToString :: (Int, Int) -> [[Cell]] -> String
-lifeToString (height, width) state =
+lifeToString :: [[Cell]] -> String
+lifeToString state =
   foldr (\line rest -> (draw line) ++ rest) "" state
   where
     draw :: [Cell] -> String
