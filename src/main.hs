@@ -8,6 +8,10 @@ import Data.Maybe
 data Cell = Alive | Dead
   deriving (Eq)
 
+instance Show Cell where
+  show Alive = "#"
+  show Dead  = " "
+
 main :: IO ()
 main = do
   ansi <- hSupportsANSI stdout
@@ -84,7 +88,7 @@ mainloop cursor size state = let (y, x) = cursor
     setCell cell = let nextState = atyxPut cursor cell state
                    in do
       -- Only redraw the character we're setting.
-      putStr (if cell == Alive then "#" else " ")
+      print cell
       mainloop cursor size nextState
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
@@ -195,10 +199,8 @@ lifeToString (height, width) state =
   foldr (\line rest -> (draw line) ++ rest) "" state
   where
     draw :: [Cell] -> String
-    draw [] = ""
-    draw (x:xs)
-      | x == Alive = '#' : draw xs
-      | otherwise  = ' ' : draw xs
+    draw []     = ""
+    draw (x:xs) = show x ++ draw xs
 
 ------------------------------------------------------------
 -- Rules
