@@ -28,6 +28,7 @@ main = do
                        middle          = (div height 2, div width 2)
                        blank           = replicate height $replicate width Dead
                      in do
+                     scrollPageUp (height - 1)
                      drawScreen blank
                      mainloop middle size blank
                      resetTerminal)
