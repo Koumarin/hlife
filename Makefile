@@ -22,4 +22,4 @@ run: $(BIN)
 	./$(BIN)
 
 $(BIN): $(HS)
-	$(HC) -o $(BIN) $(HS)
+	$(HC) $(HCFLAGS) -o $(BIN) $(HS)
