@@ -8,6 +8,7 @@ import Data.Maybe
 data Cell = Alive | Dead
   deriving (Eq)
 
+-- TODO: add a way to read these back.
 instance Show Cell where
   show Alive = "#"
   show Dead  = " "
@@ -31,9 +32,9 @@ main = do
                      draw blank
                      mainloop middle size blank
                      resetTerminal)
+               -- Make sure to reset terminal state no matter what happens.
                (\e -> do resetTerminal; throw (e :: SomeException))
 
--- Be friendly and reset the terminal state.
 resetTerminal :: IO ()
 resetTerminal = do
     setSGR [Reset]
@@ -98,7 +99,7 @@ mainloop cursor size state = let (y, x) = cursor
 
 draw :: [[Cell]] -> IO ()
 draw state = do
-  hideCursor
+  hideCursor -- Prevent visible cursor travelling on screen.
   saveCursor
   setCursorPosition 0 0
   putStr $ lifeToString state
