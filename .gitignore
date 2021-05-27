@@ -1,3 +1,10 @@
 # Emacs
 *~
 \#*\#
+
+# Object/Interface
+*.o
+*.hi
+
+# Binary
+hlife
