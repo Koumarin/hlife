@@ -71,7 +71,8 @@ mainloop cursor size state = let (y, x) = cursor
               clearLine
               putStr "Sorry I didn't write the random state generator yet :("
               mainloop cursor size state
-    -- Load a pattern (displays it under the cursor and lets you place it with 's').
+    -- Load a pattern.
+    -- (displays it under the cursor and lets you place it with 's')
     'e' -> do setCursorPosition 999 0
               clearLine
               putStr "Sorry I didn't write the pattern loader yet :("
@@ -81,20 +82,18 @@ mainloop cursor size state = let (y, x) = cursor
     _   -> mainloop cursor size state
   where
     -- Move cursor by an increment.
-    -- TODO: Add bounds checking.
-    move :: (Int, Int) -> IO ()
-    move delta = mainloop newCursor size state
-      where
-        maybeCursor = pointAdd cursor delta
-        newCursor   = if (withinSquare (0, 0)
-                                       (pointAdd size (-1, -1))
-                                       maybeCursor)
-                      then maybeCursor
-                      else cursor
+    move = \delta -> let maybeCursor = pointAdd cursor delta
+                         newCursor   = let origin = (0, 0)
+                                           corner = pointAdd size (-1, -1)
+                                       in if withinSquare origin
+                                                          corner
+                                                          maybeCursor
+                                          then maybeCursor
+                                          else cursor
+                     in mainloop newCursor size state
     -- Set cell under cursor position.
-    setCell :: Cell -> IO ()
-    setCell cell = let nextState = atyxPut cursor cell state
-                   in do
+    setCell = \cell -> let nextState = atyxPut cursor cell state
+                       in do
       -- Only redraw the character we're setting.
       putStr (show cell)
       mainloop cursor size nextState
@@ -124,7 +123,7 @@ screenSize = do
 
 -- ANSI sequences I didn't find on the library.
 saveTitle :: IO ()
-saveTitle =    do hPutStr stdout "\ESC[22;0t"; hFlush stdout
+saveTitle = do hPutStr stdout "\ESC[22;0t"; hFlush stdout
 
 restoreTitle :: IO ()
 restoreTitle = do hPutStr stdout "\ESC[23;0t"; hFlush stdout
