@@ -5,6 +5,9 @@ import System.IO
 import Control.Exception (catch, throwIO, AsyncException(UserInterrupt))
 import Data.Maybe
 
+data Cell = Alive | Dead
+  deriving (Eq)
+
 main :: IO ()
 main = do
   ansi <- hSupportsANSI stdout
@@ -19,7 +22,7 @@ main = do
                    size <- screenSize
                    let (height, width) = size
                        middle          = (div height 2, div width 2)
-                       blank           = replicate height (replicate width False)
+                       blank           = replicate height (replicate width Dead)
                      in do
                      draw size blank
                      mainloop middle size blank
@@ -36,7 +39,7 @@ resetTerminal = do
     setCursorPosition 999 0
     putStr "\n"
 
-mainloop :: (Int, Int) -> (Int, Int) -> [[Bool]] -> IO ()
+mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
 mainloop cursor size state = let (y, x) = cursor
                              in do
   setCursorPosition y x
@@ -55,9 +58,9 @@ mainloop cursor size state = let (y, x) = cursor
     -- if i can figure out how to add input timeout.
     ' ' -> step
     -- Add a live cell at cursor position.
-    's' -> setCell True
+    's' -> setCell Alive
     -- Make cell at cursor position die.
-    'd' -> setCell False
+    'd' -> setCell Dead
     -- Generate a random state.
     'r' -> do setCursorPosition 999 0
               clearLine
@@ -77,11 +80,11 @@ mainloop cursor size state = let (y, x) = cursor
     move :: (Int, Int) -> IO ()
     move delta = mainloop (pointAdd cursor delta) size state
     -- Set cell under cursor position.
-    setCell :: Bool -> IO ()
-    setCell b = let nextState = atyxPut cursor b state
-                in do
+    setCell :: Cell -> IO ()
+    setCell cell = let nextState = atyxPut cursor cell state
+                   in do
       -- Only redraw the character we're setting.
-      putStr (if b then "#" else " ")
+      putStr (if cell == Alive then "#" else " ")
       mainloop cursor size nextState
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
@@ -89,7 +92,7 @@ mainloop cursor size state = let (y, x) = cursor
       draw size nextState
       mainloop cursor size nextState
 
-draw :: (Int, Int) -> [[Bool]] -> IO ()
+draw :: (Int, Int) -> [[Cell]] -> IO ()
 draw size state = do
   hideCursor
   saveCursor
@@ -187,48 +190,54 @@ patternQueenBeeShuttle = [
 -- Drawing
 ------------------------------------------------------------
 
-lifeToString :: (Int, Int) -> [[Bool]] -> String
+lifeToString :: (Int, Int) -> [[Cell]] -> String
 lifeToString (height, width) state =
   foldr (\line rest -> (draw line) ++ rest) "" state
   where
-    draw :: [Bool] -> String
+    draw :: [Cell] -> String
     draw [] = ""
     draw (x:xs)
-      | x         = '#' : draw xs
-      | otherwise = ' ' : draw xs
+      | x == Alive = '#' : draw xs
+      | otherwise  = ' ' : draw xs
 
 ------------------------------------------------------------
 -- Rules
 ------------------------------------------------------------
 
-lifeStep :: [[Bool]] -> (Int, Int) -> [[Bool]]
+lifeStep :: [[Cell]] -> (Int, Int) -> [[Cell]]
 lifeStep state (height, width) =
   map (\i -> map (\j -> lives (i, j))
                  [0 .. width - 1])
       [0 .. height - 1]
   where
-    lives :: (Int, Int) -> Bool
+    lives :: (Int, Int) -> Cell
     lives cell
-      | (&&) (dead cell)
-             (neighbors == 3)          = True
-      | (&&) (live cell)
-             (within (3, 4) neighbors) = True
-      | otherwise                      = False
+      | (&&) (dead (atyx cell state))
+             (neighbors == 3)          = Alive
+      | (&&) (alive (atyx cell state))
+             (within (3, 4) neighbors) = Alive
+      | otherwise                      = Dead
       where
         neighbors = mooreNeighbors cell state
-    live = (\c -> atyx c state)
-    dead = (\c -> not $ live c)
+
+alive :: Cell -> Bool
+alive Alive = True
+alive _     = False
+
+dead :: Cell -> Bool
+dead Dead = True
+dead _    = False
 
 -- Count the number of cells in a 3x3 centered in (y, x).
-mooreNeighbors :: (Int, Int) -> [[Bool]] -> Int
+mooreNeighbors :: (Int, Int) -> [[Cell]] -> Int
 mooreNeighbors (y, x) state = count neighbors
   where
     -- Get only the 3x3 square around (y, x).
     neighbors = sliceBox (y - 1, x - 1) (y + 1, x + 1) state
     -- Count the number of alive cells.
-    count :: [[Bool]] -> Int
-    count blist = foldr (+) 0 (map (\line -> length $ filter (\b -> b) line)
-                                   blist)
+    count :: [[Cell]] -> Int
+    count cells = foldr (+) 0 (map (\line -> length $ filter alive line)
+                                   cells)
 
 ------------------------------------------------------------
 -- Functions for utilizing arrays.
