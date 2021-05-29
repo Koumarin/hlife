@@ -12,6 +12,61 @@ instance Show Cell where
   show Dead  = "."
 
 ------------------------------------------------------------
+-- Drawing
+------------------------------------------------------------
+
+lifeToString :: [[Cell]] -> String
+lifeToString state =
+  foldr (\line rest -> (draw line) ++ rest) "" state
+  where
+    draw :: [Cell] -> String
+    draw []     = ""
+    draw (x:xs) = drawCell x ++ draw xs
+
+drawCell :: Cell -> String
+drawCell Alive = setSGRCode [SetColor Background Vivid Blue]  ++ " "
+drawCell Dead  = setSGRCode [SetColor Background Dull  Black] ++ " "
+
+------------------------------------------------------------
+-- Rules
+------------------------------------------------------------
+
+lifeStep :: [[Cell]] -> (Int, Int) -> [[Cell]]
+lifeStep state (height, width) =
+  map (\i -> map (\j -> lives (i, j))
+                 [0 .. width - 1])
+      [0 .. height - 1]
+  where
+    lives :: (Int, Int) -> Cell
+    lives cell
+      | (&&) (dead (atyx cell state))
+             (neighbors == 3)          = Alive
+      | (&&) (alive (atyx cell state))
+             (within (3, 4) neighbors) = Alive
+      | otherwise                      = Dead
+      where
+        neighbors = mooreNeighbors cell state
+
+alive :: Cell -> Bool
+alive Alive = True
+alive _     = False
+
+dead :: Cell -> Bool
+dead Dead = True
+dead _    = False
+
+-- Count the number of cells in a 3x3 centered in (y, x).
+mooreNeighbors :: (Int, Int) -> [[Cell]] -> Int
+mooreNeighbors (y, x) state = count neighbors
+  where
+    -- Get only the 3x3 square around (y, x).
+    neighbors = sliceBox (y - 1, x - 1) (y + 1, x + 1) state
+    -- Count the number of alive cells.
+    count :: [[Cell]] -> Int
+    count cells = foldr (+) 0 (map (\line -> length $ filter alive line)
+                                   cells)
+
+------------------------------------------------------------
 -- Example states
 ------------------------------------------------------------
 
@@ -78,58 +133,3 @@ patternQueenBeeShuttle = [
     Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive, Alive],
   [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead, Alive,  Dead, Alive],
   [ Dead,  Dead, Dead, Dead, Dead,  Dead,  Dead,  Dead,  Dead, Alive]]
-
-------------------------------------------------------------
--- Drawing
-------------------------------------------------------------
-
-lifeToString :: [[Cell]] -> String
-lifeToString state =
-  foldr (\line rest -> (draw line) ++ rest) "" state
-  where
-    draw :: [Cell] -> String
-    draw []     = ""
-    draw (x:xs) = drawCell x ++ draw xs
-
-drawCell :: Cell -> String
-drawCell Alive = setSGRCode [SetColor Background Vivid Blue]  ++ " "
-drawCell Dead  = setSGRCode [SetColor Background Dull  Black] ++ " "
-
-------------------------------------------------------------
--- Rules
-------------------------------------------------------------
-
-lifeStep :: [[Cell]] -> (Int, Int) -> [[Cell]]
-lifeStep state (height, width) =
-  map (\i -> map (\j -> lives (i, j))
-                 [0 .. width - 1])
-      [0 .. height - 1]
-  where
-    lives :: (Int, Int) -> Cell
-    lives cell
-      | (&&) (dead (atyx cell state))
-             (neighbors == 3)          = Alive
-      | (&&) (alive (atyx cell state))
-             (within (3, 4) neighbors) = Alive
-      | otherwise                      = Dead
-      where
-        neighbors = mooreNeighbors cell state
-
-alive :: Cell -> Bool
-alive Alive = True
-alive _     = False
-
-dead :: Cell -> Bool
-dead Dead = True
-dead _    = False
-
--- Count the number of cells in a 3x3 centered in (y, x).
-mooreNeighbors :: (Int, Int) -> [[Cell]] -> Int
-mooreNeighbors (y, x) state = count neighbors
-  where
-    -- Get only the 3x3 square around (y, x).
-    neighbors = sliceBox (y - 1, x - 1) (y + 1, x + 1) state
-    -- Count the number of alive cells.
-    count :: [[Cell]] -> Int
-    count cells = foldr (+) 0 (map (\line -> length $ filter alive line)
-                                   cells)
