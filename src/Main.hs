@@ -4,7 +4,7 @@ import System.Console.ANSI
 import System.IO
 import Data.Maybe
 
-import Life
+import Rogue
 import Terminal
 import Util
 
@@ -13,23 +13,25 @@ main = do
   ansi <- hSupportsANSI stdout
   if (not ansi)
     then putStr "I'm sorry, this game only runs on ANSI terminals.\n"
-    else withTerminal [Name "Conway's Game of Life",
+    else withTerminal [Name "NetHeck",
                        NoEcho]
            (do hSetBuffering stdin  NoBuffering
                showCursor
                size <- screenSize
                let (height, width) = size
                    middle          = (div height 2, div width 2)
-                   blank           = blankLife size
+                   dungeon         = blankDungeon size
                  in do
                  scrollPageUp (height - 1)
-                 drawScreen blank
-                 mainloop middle size blank)
+                 drawScreen dungeon
+                 mainloop middle size dungeon)
 
-mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
-mainloop cursor size state = let (y, x) = cursor
-                             in do
+mainloop :: (Int, Int) -> (Int, Int) -> [[Tile]] -> IO ()
+mainloop cursor size dungeon = let (y, x) = cursor
+                               in do
   setCursorPosition y x
+  drawScreen dungeon
+  atPrint cursor "@"
   hFlush stdout
   c <- hGetChar stdin
   case c of
@@ -42,29 +44,9 @@ mainloop cursor size state = let (y, x) = cursor
     'u' -> move (-1,  1)
     'b' -> move ( 1, -1)
     'n' -> move ( 1,  1)
-    -- I'm thinkin space should maybe be a step? Or maybe pause/unpause
-    -- if i can figure out how to add input timeout.
-    ' ' -> step
-    -- Add a live cell at cursor position.
-    's' -> setCell Alive
-    -- Make cell at cursor position die.
-    'd' -> setCell Dead
-    -- Generate a random state.
-    'r' -> do setCursorPosition 999 0
-              clearLine
-              putStr "Sorry I didn't write the random state generator yet :("
-              mainloop cursor size state
-    -- Load a pattern.
-    -- (displays it under the cursor and lets you place it with 's')
-    'e' -> do setCursorPosition 999 0
-              clearLine
-              putStr "Sorry I didn't write the pattern loader yet :("
-              mainloop cursor size state
-    -- Clear the whole canvas.
-    'c' -> clean
     -- Quit.
     'q' -> return ()
-    _   -> mainloop cursor size state
+    _   -> mainloop cursor size dungeon
   where
     -- Move cursor by an increment.
     move = \delta -> let maybeCursor = pointAdd cursor delta
@@ -75,29 +57,23 @@ mainloop cursor size state = let (y, x) = cursor
                                                           maybeCursor
                                           then maybeCursor
                                           else cursor
-                     in mainloop newCursor size state
-    -- Set cell under cursor position.
-    setCell = \cell -> let nextState = atyxPut cursor cell state
-                       in do
-      -- Only redraw the character we're setting.
-      putStr (drawCell cell)
-      mainloop cursor size nextState
-    -- Perform a step (ideally this should have been pause/unpause).
-    step = let nextState = lifeStep state size
-           in do
-      drawScreen nextState
-      mainloop cursor size nextState
-    clean = let blank = blankLife size
-            in do
-      drawScreen blank
-      mainloop cursor size blank
+                     in mainloop newCursor size dungeon
 
-drawScreen :: [[Cell]] -> IO ()
-drawScreen state = do
+drawScreen :: [[Tile]] -> IO ()
+drawScreen dungeon = do
   hideCursor -- Prevent visible cursor travelling on screen.
+  saveCursor
   setCursorPosition 0 0
-  putStr $ lifeToString state
+  putStr $ dungeonToString dungeon
+  restoreCursor
   showCursor
+
+atPrint :: (Int, Int) -> String -> IO ()
+atPrint (y, x) msg = do
+  saveCursor
+  setCursorPosition y x
+  putStr msg
+  restoreCursor
 
 -- Either get terminal size when our terminal understands the keycode
 -- or we default to 80x24.
@@ -107,3 +83,6 @@ screenSize = do
   if isJust size
     then return (fromJust size)
     else return (24, 80)
+
+blankDungeon :: (Int, Int) -> [[Tile]]
+blankDungeon (height, width) = replicate height $ replicate width Floor

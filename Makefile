@@ -5,7 +5,7 @@ HC      = ghc
 HCFLAGS = -Wall
 
 HS =	src/Main.hs		\
-	src/Life.hs		\
+	src/Rogue.hs		\
 	src/withTerminal.hs	\
 	src/Util.hs
 
