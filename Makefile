@@ -4,8 +4,9 @@
 HC      = ghc
 HCFLAGS = -Wall
 
-HS =	src/Main.hs	\
-	src/Life.hs	\
+HS =	src/Main.hs		\
+	src/Life.hs		\
+	src/withTerminal.hs	\
 	src/Util.hs
 
 HSOBJ = $(HS:.hs=.o)

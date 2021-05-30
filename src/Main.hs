@@ -2,10 +2,10 @@ module Main where
 
 import System.Console.ANSI
 import System.IO
-import Control.Exception (catch, throw, SomeException)
 import Data.Maybe
 
 import Life
+import Terminal
 import Util
 
 main :: IO ()
@@ -13,33 +13,18 @@ main = do
   ansi <- hSupportsANSI stdout
   if (not ansi)
     then putStr "I'm sorry, this game only runs on ANSI terminals.\n"
-    else catch (do saveTitle
-                   setTitle "Conway's Game of Life"
-                   hSetEcho      stdin  False
-                   hSetBuffering stdin  NoBuffering
-                   showCursor
-                   size <- screenSize
-                   let (height, width) = size
-                       middle          = (div height 2, div width 2)
-                       blank           = blankLife size
-                     in do
-                     scrollPageUp (height - 1)
-                     drawScreen blank
-                     mainloop middle size blank
-                     resetTerminal)
-               -- Make sure to reset terminal state no matter what happens.
-               (\e -> do resetTerminal; throw (e :: SomeException))
-  where
-    resetTerminal = do
-      setSGR [Reset]
-      restoreTitle
-      -- Put the cursor at lowest line we can, so screen isn't cut.
-      setCursorPosition 999 0
-      putStr "\n"
-      showCursor
-    -- ANSI sequences I didn't find on the library.
-    saveTitle    = hPutStr stdout "\ESC[22;0t"
-    restoreTitle = hPutStr stdout "\ESC[23;0t"
+    else withTerminal [Name "Conway's Game of Life",
+                       NoEcho]
+           (do hSetBuffering stdin  NoBuffering
+               showCursor
+               size <- screenSize
+               let (height, width) = size
+                   middle          = (div height 2, div width 2)
+                   blank           = blankLife size
+                 in do
+                 scrollPageUp (height - 1)
+                 drawScreen blank
+                 mainloop middle size blank)
 
 mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
 mainloop cursor size state = let (y, x) = cursor
