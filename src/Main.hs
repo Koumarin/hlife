@@ -70,6 +70,7 @@ mainloop cursor size state = let (y, x) = cursor
     move = \delta -> let maybeCursor = pointAdd cursor delta
                          newCursor   = let origin = (0, 0)
                                            corner = pointAdd size (-1, -1)
+                                           -- Check against screen boundaries.
                                        in if withinSquare origin
                                                           corner
                                                           maybeCursor
