@@ -54,9 +54,7 @@ mainloop cursor size dungeon = let (y, x) = cursor
                            let origin = (0, 0)
                                corner = pointAdd size (-1, -1)
                            -- Check against screen boundaries and collision.
-                           in if and [withinSquare origin
-                                                   corner
-                                                   maybeCursor,
+                           in if and [withinSquare origin corner maybeCursor,
                                       walkable (atyx maybeCursor dungeon)]
                               then maybeCursor
                               else cursor
