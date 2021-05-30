@@ -1,5 +1,6 @@
 module Rogue
-  (dungeonToString,
+  (walkable,
+   dungeonToString,
    Tile (..))
 where
 
@@ -7,6 +8,10 @@ data Tile
   = Floor
   | Wall
   deriving (Eq)
+
+walkable :: Tile -> Bool
+walkable Floor = True
+walkable Wall  = False
 
 dungeonToString :: [[Tile]] -> String
 dungeonToString dungeon =

@@ -20,7 +20,7 @@ main = do
                size <- screenSize
                let (height, width) = size
                    middle          = (div height 2, div width 2)
-                   dungeon         = blankDungeon size
+                   dungeon         = atyxPut (12, 39) Wall (blankDungeon size)
                  in do
                  scrollPageUp (height - 1)
                  drawScreen dungeon
@@ -50,14 +50,16 @@ mainloop cursor size dungeon = let (y, x) = cursor
   where
     -- Move cursor by an increment.
     move = \delta -> let maybeCursor = pointAdd cursor delta
-                         newCursor   = let origin = (0, 0)
-                                           corner = pointAdd size (-1, -1)
-                                           -- Check against screen boundaries.
-                                       in if withinSquare origin
-                                                          corner
-                                                          maybeCursor
-                                          then maybeCursor
-                                          else cursor
+                         newCursor   =
+                           let origin = (0, 0)
+                               corner = pointAdd size (-1, -1)
+                           -- Check against screen boundaries and collision.
+                           in if and [withinSquare origin
+                                                   corner
+                                                   maybeCursor,
+                                      walkable (atyx maybeCursor dungeon)]
+                              then maybeCursor
+                              else cursor
                      in mainloop newCursor size dungeon
 
 drawScreen :: [[Tile]] -> IO ()
