@@ -1,5 +1,6 @@
 module Util where
 
+applyTimes :: Int -> (a -> a) -> a -> a
 applyTimes = (foldr (.) id.) . replicate
 
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
