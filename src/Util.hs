@@ -1,5 +1,7 @@
 module Util where
 
+applyTimes = (foldr (.) id.) . replicate
+
 pointAdd :: (Int, Int) -> (Int, Int) -> (Int, Int)
 pointAdd (y, x) (dy, dx) = (y + dy, x + dx)
 
