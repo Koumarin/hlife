@@ -2,6 +2,7 @@ module Main where
 
 import System.Console.ANSI
 import System.IO
+import System.Random
 import Data.Maybe
 
 import Rogue
@@ -17,10 +18,11 @@ main = do
                        NoEcho]
            (do hSetBuffering stdin  NoBuffering
                showCursor
+               gen <- getStdGen
                size <- screenSize
                let (height, width) = size
                    middle          = (div height 2, div width 2)
-                   dungeon         = atyxPut (12, 39) Wall (blankDungeon size)
+                   (dungeon, gen') = makeCave size gen
                  in do
                  scrollPageUp (height - 1)
                  drawScreen dungeon

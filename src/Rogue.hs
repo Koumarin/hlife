@@ -1,5 +1,6 @@
 module Rogue
   (walkable,
+   makeCave,
    dungeonToString,
    Tile (..))
 where
@@ -20,22 +21,27 @@ walkable Wall  = False
 makeCave :: (Int, Int) -> StdGen -> ([[Tile]], StdGen)
 makeCave size gen = (cave', gen')
   where (cave, gen') = randomTiles size gen
-        cave' = erode 5 size cave
+        cave' = erode 10 size cave
 
 erode :: Int -> (Int, Int) -> [[Tile]] -> [[Tile]]
 erode times (height, width) cave = applyTimes times erode' cave
-  where erode' = \cave -> map (\i -> map (\j -> newTile(i, j))
+  where erode' = \cave -> map (\i -> map (\j -> newTile (i, j) cave)
                                          [0 .. width - 1])
                               [0 .. height - 1]
-        newTile = \point -> if mooreNeighbors point Wall cave >= 5
-                            then Wall
-                            else Floor
+          where
+            newTile = \(y, x) cave ->
+                        if or [mooreNeighbors 1 (y, x) Wall cave >= 5,
+                               mooreNeighbors 2 (y, x) Wall cave <= 1,
+                               -- Fill in the borders.
+                               y == 0, x == 0, y == height - 1, x == width - 1]
+                        then Wall
+                        else Floor
 
--- Count the number of tiles in a 3x3 square centered in (y, x).
-mooreNeighbors :: (Int, Int) -> Tile -> [[Tile]] -> Int
-mooreNeighbors (y, x) tile cave = count neighbors
-  -- Get only the 3x3 square around (y, x).
-  where neighbors = sliceBox (y - 1, x - 1) (y + 1, x + 1) cave
+-- Count the number of tiles in a dxd square centered in (y, x).
+mooreNeighbors :: Int -> (Int, Int) -> Tile -> [[Tile]] -> Int
+mooreNeighbors d (y, x) tile cave = count neighbors
+  -- Get only the dxd square around (y, x).
+  where neighbors = sliceBox (y - d, x - d) (y + d, x + d) cave
   -- Count the number of times the tile appears in the neighborhood.
         count = \tiles ->
                   foldr (+) 0 (map (\line -> length $ filter (== tile) line)
