@@ -30,7 +30,7 @@ erode times (height, width) cave = applyTimes times erode' cave
                               [0 .. height - 1]
         newTile = \(y, x) cave ->
                     if or [mooreNeighbors 1 (y, x) Wall cave >= 5,
-                           mooreNeighbors 2 (y, x) Wall cave <= 1,
+                           mooreNeighbors 2 (y, x) Wall cave == 0,
                            -- Fill in the borders.
                            y == 0, x == 0, y == height - 1, x == width - 1]
                     then Wall
