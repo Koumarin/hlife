@@ -28,14 +28,13 @@ erode times (height, width) cave = applyTimes times erode' cave
   where erode' = \cave -> map (\i -> map (\j -> newTile (i, j) cave)
                                          [0 .. width - 1])
                               [0 .. height - 1]
-          where
-            newTile = \(y, x) cave ->
-                        if or [mooreNeighbors 1 (y, x) Wall cave >= 5,
-                               mooreNeighbors 2 (y, x) Wall cave <= 1,
-                               -- Fill in the borders.
-                               y == 0, x == 0, y == height - 1, x == width - 1]
-                        then Wall
-                        else Floor
+        newTile = \(y, x) cave ->
+                    if or [mooreNeighbors 1 (y, x) Wall cave >= 5,
+                           mooreNeighbors 2 (y, x) Wall cave <= 1,
+                           -- Fill in the borders.
+                           y == 0, x == 0, y == height - 1, x == width - 1]
+                    then Wall
+                    else Floor
 
 -- Count the number of tiles in a dxd square centered in (y, x).
 mooreNeighbors :: Int -> (Int, Int) -> Tile -> [[Tile]] -> Int
