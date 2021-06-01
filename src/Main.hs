@@ -22,15 +22,14 @@ main = do
                size <- screenSize
                let (height, width) = size
                    middle          = (div height 2, div width 2)
-                   (dungeon, gen') = makeCave size gen
+                   (dungeon, _)    = makeCave size gen
                  in do
                  scrollPageUp (height - 1)
                  drawScreen dungeon
                  mainloop middle size dungeon)
 
 mainloop :: (Int, Int) -> (Int, Int) -> [[Tile]] -> IO ()
-mainloop cursor size dungeon = let (y, x) = cursor
-                               in do
+mainloop cursor@(y, x) size dungeon = do
   setCursorPosition y x
   drawScreen dungeon
   atPrint cursor "@"
