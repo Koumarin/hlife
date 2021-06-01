@@ -2,7 +2,7 @@
 .POSIX:
 
 HC      = ghc
-HCFLAGS = -Wall
+HCFLAGS = -Wall -Wno-name-shadowing
 
 HS =	src/Main.hs		\
 	src/Rogue.hs		\
