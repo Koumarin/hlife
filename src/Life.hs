@@ -38,22 +38,21 @@ lifeStep state (height, width) =
       [0 .. height - 1]
   where
     lives :: (Int, Int) -> Cell
-    lives cell
-      | (&&) (dead (atyx cell state))
-             (neighbors == 3)          = Alive
-      | (&&) (alive (atyx cell state))
-             (within (3, 4) neighbors) = Alive
-      | otherwise                      = Dead
+    lives point
+      | and [dead cell,
+             neighbors == 3]          = Alive
+      | and [alive cell,
+             within (3, 4) neighbors] = Alive
+      | otherwise                     = Dead
       where
-        neighbors = mooreNeighbors cell state
+        cell      = atyx point state
+        neighbors = mooreNeighbors point state
 
 alive :: Cell -> Bool
-alive Alive = True
-alive _     = False
+alive = (== Alive)
 
 dead :: Cell -> Bool
-dead Dead = True
-dead _    = False
+dead = not . alive
 
 -- Count the number of cells in a 3x3 centered in (y, x).
 mooreNeighbors :: (Int, Int) -> [[Cell]] -> Int
