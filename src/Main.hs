@@ -2,6 +2,7 @@ module Main where
 
 import System.Console.ANSI
 import System.IO
+import System.Random
 import Data.Maybe
 
 import Life
@@ -17,6 +18,7 @@ main = do
                        NoEcho]
            (do hSetBuffering stdin  NoBuffering
                showCursor
+               gen  <- getStdGen
                size <- screenSize
                let (height, width) = size
                    middle          = (div height 2, div width 2)
@@ -24,11 +26,11 @@ main = do
                  in do
                  scrollPageUp (height - 1)
                  drawScreen blank
-                 mainloop middle size blank)
+                 mainloop middle size blank gen)
 
-mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> IO ()
-mainloop cursor size state = let (y, x) = cursor
-                             in do
+mainloop :: (Int, Int) -> (Int, Int) -> [[Cell]] -> StdGen -> IO ()
+mainloop cursor size state gen = let (y, x) = cursor
+                                 in do
   setCursorPosition y x
   hFlush stdout
   c <- hGetChar stdin
@@ -50,21 +52,20 @@ mainloop cursor size state = let (y, x) = cursor
     -- Make cell at cursor position die.
     'd' -> setCell Dead
     -- Generate a random state.
-    'r' -> do setCursorPosition 999 0
-              clearLine
-              putStr "Sorry I didn't write the random state generator yet :("
-              mainloop cursor size state
+    'r' -> let (newState, gen') = randomLife size gen
+           in do drawScreen newState
+                 mainloop cursor size newState gen'
     -- Load a pattern.
     -- (displays it under the cursor and lets you place it with 's')
     'e' -> do setCursorPosition 999 0
               clearLine
               putStr "Sorry I didn't write the pattern loader yet :("
-              mainloop cursor size state
+              mainloop cursor size state gen
     -- Clear the whole canvas.
     'c' -> clean
     -- Quit.
     'q' -> return ()
-    _   -> mainloop cursor size state
+    _   -> mainloop cursor size state gen
   where
     -- Move cursor by an increment.
     move = \delta -> let maybeCursor = pointAdd cursor delta
@@ -76,22 +77,22 @@ mainloop cursor size state = let (y, x) = cursor
                                                           maybeCursor
                                           then maybeCursor
                                           else cursor
-                     in mainloop newCursor size state
+                     in mainloop newCursor size state gen
     -- Set cell under cursor position.
     setCell = \cell -> let nextState = atyxPut cursor cell state
                        in do
       -- Only redraw the character we're setting.
       putStr (drawCell cell)
-      mainloop cursor size nextState
+      mainloop cursor size nextState gen
     -- Perform a step (ideally this should have been pause/unpause).
     step = let nextState = lifeStep state size
            in do
       drawScreen nextState
-      mainloop cursor size nextState
+      mainloop cursor size nextState gen
     clean = let blank = blankLife size
             in do
       drawScreen blank
-      mainloop cursor size blank
+      mainloop cursor size blank gen
 
 drawScreen :: [[Cell]] -> IO ()
 drawScreen state = do
@@ -108,3 +109,4 @@ screenSize = do
   if isJust size
     then return (fromJust size)
     else return (24, 80)
+

@@ -1,6 +1,8 @@
 module Life where
 
 import System.Console.ANSI
+import System.Random
+
 import Util
 
 data Cell = Alive | Dead
@@ -64,6 +66,29 @@ mooreNeighbors (y, x) state = count neighbors
     count :: [[Cell]] -> Int
     count cells = foldr (+) 0 (map (\line -> length $ filter alive line)
                                    cells)
+
+------------------------------------------------------------
+-- Random
+------------------------------------------------------------
+
+-- Generate a random state.
+randomLife :: (Int, Int) -> StdGen -> ([[Cell]], StdGen)
+randomLife size gen = randomLife' [] size gen
+  where
+    randomLife' :: [[Cell]] -> (Int, Int) -> StdGen -> ([[Cell]], StdGen)
+    randomLife' acc (     0,     _) gen = (acc, gen)
+    randomLife' acc (height, width) gen =
+      let (row, gen') = makeRow [] width gen
+      in randomLife' (row : acc) (height - 1, width) gen'
+    makeRow :: [Cell] -> Int -> StdGen -> ([Cell], StdGen)
+    makeRow acc   0 gen = (acc, gen)
+    makeRow acc len gen = let (t, gen') = randomCell gen
+                          in makeRow (t : acc) (len - 1) gen'
+
+randomCell :: StdGen -> (Cell, StdGen)
+randomCell gen =
+  let (idx, gen') = randomR (0, 1) gen :: (Int, StdGen)
+  in (at idx [Dead, Alive], gen')
 
 ------------------------------------------------------------
 -- Example states
